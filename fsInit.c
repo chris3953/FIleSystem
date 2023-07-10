@@ -24,6 +24,7 @@
 #include "fsInit.h"
 #include "fsLow.h"
 #include "mfs.h"
+#include "FreeSpace.c"
 
 #define SIGNATURE 0xBEEFED
 
