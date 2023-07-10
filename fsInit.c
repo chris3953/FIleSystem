@@ -25,8 +25,12 @@
 #include "fsLow.h"
 #include "mfs.h"
 #include "FreeSpace.c"
+#include "FreeSpace.h"
 
 #define SIGNATURE 0xBEEFED
+
+DirectoryEntry * root;
+DirectoryEntry * cwd_location;
 
 VCB* vcb = NULL;
 
@@ -55,8 +59,63 @@ int initFileSystem (uint64_t numberOfBlocks, uint64_t blockSize)
 	return 0;
 	}
 	
-	
+
+int initRootDirectory(VCB* vcb){
+	int startBlock = GetFreeSpace(/*D_ENTRY_BLOCKS*/);  //need to define D_ENTRY_BLOCKS
+
+	time_t t;
+	time(&t);
+
+	vcb->root = startBlock;  //set root block number
+
+	// Create directory entries for "." and ".."
+    DirectoryEntry* de = (DirectoryEntry*) malloc(sizeof(DirectoryEntry)); // Create a new directory entry
+	if(!de){
+		printf("Memory allocation error.\n");
+		return -1;
+	}
+
+    strcpy(de->name, ".");
+    de->size = /*ENTRY_MEMORY*/;
+    de->location[0].size = startBlock;
+    de->creation_date = t;
+    de->last_modified = t;
+	de->last_opened = t;
+    de->type = 1; 
+
+    if(LBAwrite(de, /*D_ENTRY_BLOCKS*/ startBlock) == -1){
+		printf("Write error.\n");
+		free(de);
+		return -1;
+	}
+
+	DirectoryEntry* de2 = (DirectoryEntry*) malloc(1, sizeof(DirectoryEntry));
+
+	strcpy(de2->name, "..")
+	de->size = /*ENTRY_MEMORY*/;
+    de->location[1].size = startBlock;
+    de->creation_date = t;
+    de->last_modified = t;
+	de->last_opened = t;
+    de->type = 1;
+
+	if(LBAwrite(de2, /*D_ENTRY_BLOCKS*/ startBlock+1) == -1){
+		printf("Write error.\n");
+		free(de);
+		free(de2);
+		return -1;
+	}
+	free(de);	
+	free(de2);
+
+	return 0;
+}
+
+
 void exitFileSystem ()
 	{
 	printf ("System exiting\n");
 	}
+
+
+
