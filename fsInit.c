@@ -28,6 +28,10 @@
 #include "FreeSpace.h"
 
 #define SIGNATURE 0xBEEFED
+#define NUM_ENTRIES 51
+#define DIR_ENTRY_SIZE 40
+#define ENTRY_MEM NUM_ENTRIES * DIR_ENTRY_SIZE
+#define D_ENTRY_BLOCKS 4 
 
 DirectoryEntry * root;
 DirectoryEntry * cwd_location;
@@ -61,7 +65,7 @@ int initFileSystem (uint64_t numberOfBlocks, uint64_t blockSize)
 	
 
 int initRootDirectory(VCB* vcb){
-	int startBlock = GetFreeSpace(/*D_ENTRY_BLOCKS*/);  //need to define D_ENTRY_BLOCKS
+	int startBlock = GetFreeSpace(D_ENTRY_BLOCKS);  //need to define D_ENTRY_BLOCKS
 
 	time_t t;
 	time(&t);
@@ -76,37 +80,36 @@ int initRootDirectory(VCB* vcb){
 	}
 
     strcpy(de->name, ".");
-    de->size = /*ENTRY_MEMORY*/;
+    de->size = ENTRY_MEM;
     de->location[0].size = startBlock;
     de->creation_date = t;
     de->last_modified = t;
 	de->last_opened = t;
     de->type = 1; 
 
-    if(LBAwrite(de, /*D_ENTRY_BLOCKS*/ startBlock) == -1){
+    if(LBAwrite(de, D_ENTRY_BLOCKS, startBlock) == -1){
 		printf("Write error.\n");
 		free(de);
 		return -1;
 	}
 
-	DirectoryEntry* de2 = (DirectoryEntry*) malloc(1, sizeof(DirectoryEntry));
+	DirectoryEntry* de2 = (DirectoryEntry*) malloc(sizeof(DirectoryEntry));
 
-	strcpy(de2->name, "..")
-	de->size = /*ENTRY_MEMORY*/;
+	strcpy(de2->name, ".."); 
+	de->size = ENTRY_MEM;
     de->location[1].size = startBlock;
     de->creation_date = t;
     de->last_modified = t;
 	de->last_opened = t;
     de->type = 1;
 
-	if(LBAwrite(de2, /*D_ENTRY_BLOCKS*/ startBlock+1) == -1){
+	if(LBAwrite(de2, D_ENTRY_BLOCKS,  startBlock+1) == -1){
 		printf("Write error.\n");
 		free(de);
 		free(de2);
 		return -1;
 	}
-	free(de);	
-	free(de2);
+	
 
 	return 0;
 }
