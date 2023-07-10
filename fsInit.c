@@ -33,10 +33,9 @@
 #define ENTRY_MEM NUM_ENTRIES * DIR_ENTRY_SIZE
 #define D_ENTRY_BLOCKS 4 
 
-DirectoryEntry * root;
-DirectoryEntry * cwd_location;
 
-VCB* vcb = NULL;
+ VCB* vcb = NULL;
+ int initRootDirectory(VCB* vcb); 
 
 int initFileSystem (uint64_t numberOfBlocks, uint64_t blockSize)
 	{
@@ -59,6 +58,8 @@ int initFileSystem (uint64_t numberOfBlocks, uint64_t blockSize)
 		vcb->block_size = blockSize;
 		vcb->free_space_start_block = 0;
 		vcb->signature = SIGNATURE;
+		initRootDirectory(vcb); 
+		LBAwrite(vcb,1,0); 
 	}
 	return 0;
 	}
