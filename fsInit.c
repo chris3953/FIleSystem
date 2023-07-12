@@ -54,7 +54,7 @@ int initFileSystem (uint64_t numberOfBlocks, uint64_t blockSize)
 	} else {
 		// initialize VCB
 		//vcb->root=;
-		vcb->totalBlocks = numberOfBlocks;
+		vcb->totalBlocks = 0; // this is the KL in the hex 
 		vcb->block_size = blockSize;
 		vcb->free_space_start_block = 0;
 		vcb->signature = SIGNATURE;

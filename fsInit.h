@@ -39,11 +39,11 @@ typedef struct DirectoryEntry {
 }DirectoryEntry; 
 
 typedef struct VCB {
-
+    unsigned long signature;
     int root; // the block the root directory starts on
     int totalBlocks; 
     int block_size; // size of a block in bytes
     int free_space_start_block; // block at which free space starts
-    unsigned long signature; // magic number used to tell if the volume is initialized
+     // magic number used to tell if the volume is initialized
 
 } VCB;
