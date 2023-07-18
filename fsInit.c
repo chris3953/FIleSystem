@@ -49,7 +49,7 @@ int initFileSystem (uint64_t numberOfBlocks, uint64_t blockSize)
 	if( vcb->signature == SIGNATURE){
 		free(vcb);
 		vcb = NULL;
-		printf("Signature matched, Already initialized");
+		printf("Signature matched, Already initialized\n");
 		return -1; //ERROR		
 	} else {
 		// initialize VCB
