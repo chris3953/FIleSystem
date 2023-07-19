@@ -26,6 +26,11 @@
 #include "mfs.h"
 #include "FreeSpace.c"
 #include "FreeSpace.h"
+#include "parsePath.h"
+
+
+
+
 
  VCB* vcb = NULL;
  int initRootDirectory(VCB* vcb); 

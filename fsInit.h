@@ -26,6 +26,13 @@
 #define ENTRY_MEM NUM_ENTRIES * DIR_ENTRY_SIZE
 #define D_ENTRY_BLOCKS 4 
 
+
+#ifndef FSINIT_H
+#define FSINIT_H
+
+// Place your original content of fsInit.h here
+
+
 typedef struct Extents { 
   unsigned long size; 
   unsigned int count; 
@@ -53,3 +60,7 @@ typedef struct VCB {
      // magic number used to tell if the volume is initialized
 
 } VCB;
+
+
+
+#endif

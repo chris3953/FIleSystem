@@ -1,6 +1,6 @@
 #include "mfs.h"
-//#include "parsePath.c"
-//#include "fsFreeSpace.h"
+#include "parsePath.c"
+#include "FreeSpace.h"
 
 int fs_mkdir(const char *pathname, mode_t mode){
 	printf("\n---> Make Directory <---\n");

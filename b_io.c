@@ -21,6 +21,11 @@
 #include <fcntl.h>
 #include "b_io.h"
 #include "fsInit.h"
+#include "mfs.h"
+#include "FreeSpace.h"
+#include "parsePath.h"
+#include "fsLow.h"
+
 
 #define MAXFCBS 20
 #define B_CHUNK_SIZE 512

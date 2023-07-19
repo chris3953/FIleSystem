@@ -25,6 +25,7 @@
 #include <getopt.h>
 #include <string.h>
 
+#include "b_io.h"
 #include "fsLow.h"
 #include "mfs.h"
 
