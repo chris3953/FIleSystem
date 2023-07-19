@@ -7,8 +7,8 @@ typedef struct {
     char lastElementName[NAME_LIMIT]; // used to hold the name of the last element, optional
     directoryEntry* parentDirEntry;    // directoryEntry of the parent directory
     // add more fields here
-} PathInfo;
+} parsePath;
 
 // Function to parse path
 // Takes in the current working directory, root directory, the path to be parsed, and a reference to the PathInfo structure
-void parsePath(directoryEntry * cwd, directoryEntry* root, char* pathToParse, PathInfo * pathInfo );
+void parsePath(DirectoryEntry * cwd, DirectoryEntry* root, char* pathToParse, PathInfo * pathInfo );
