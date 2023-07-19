@@ -16,6 +16,8 @@
 #define _B_IO_H
 #include <fcntl.h>
 
+#include "parsePath.h"
+
 typedef int b_io_fd;
 
 b_io_fd b_open (char * filename, int flags);

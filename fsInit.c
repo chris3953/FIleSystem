@@ -27,13 +27,6 @@
 #include "FreeSpace.c"
 #include "FreeSpace.h"
 
-#define SIGNATURE 0xBEEFED
-#define NUM_ENTRIES 51
-#define DIR_ENTRY_SIZE 40
-#define ENTRY_MEM NUM_ENTRIES * DIR_ENTRY_SIZE
-#define D_ENTRY_BLOCKS 4 
-
-
  VCB* vcb = NULL;
  int initRootDirectory(VCB* vcb); 
 

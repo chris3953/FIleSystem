@@ -6,7 +6,7 @@ int fs_mkdir(const char *pathname, mode_t mode){
 	printf("\n---> Make Directory <---\n");
 	char pathToParse[NAME_LIMIT];
 	strcpy(pathToParse, pathname);
-	parsedInfo* info = malloc(sizeof(parsedInfo));
+	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
 	if(info->isPathValid == 0)
 		reutrn (-2);
@@ -31,7 +31,7 @@ int fs_rmdir(const char *pathname){
 	printf("\n---Remove Directory---\n");
 	char pathToParse[NAME_LIMIT];
 	strcpy(pathToParse, pathname);
-	parsedInfo* info = malloc(sizeof(parsedInfo));
+	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
 	printf("IN RMDIR . . .\n lastElementindex: %d, isFile: %d\n", info->lastElementIndex, info->parent->entries[info->lastElementIndex]->isFile);	
 	if(info->lastElementIndex < 0)
@@ -54,7 +54,7 @@ int fs_delete(char* filename){
  	printf("\n---Deletey---\n");
 	 char pathToParse[NAME_LIMIT];
         strcpy(pathToParse, filename);
-        parsedInfo* info = malloc(sizeof(parsedInfo));
+        PathInfo* info = malloc(sizeof(PathInfo));
         parsePath(cwd, root, pathToParse, info);
 
         if(info->lastElementIndex < 0)
@@ -72,19 +72,19 @@ fdDir * fs_opendir(const char *name){
 	// Parsing process
 	char pathToParse[NAME_LIMIT];
 	strcpy(pathToParse, name);
-	parsedInfo* info = malloc(sizeof(parsedInfo));
+	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
 	
 	printf("-OPENDIR- parent name: %s LASTELEMENTINDEX: %d\n", info->parent->name, info->lastElementIndex);	
 	// TODO: Add if is directory condition
 	if(info->lastElementIndex != 0){
-		fdDir* parsedInfo = malloc(sizeof(fdDir));
+		fdDir* PathInfo = malloc(sizeof(fdDir));
 
-		parsedInfo->directory = loadDir(info->parent->entries[info->lastElementIndex]);
-		parsedInfo->d_reclen = info->parent->size/sizeof(DirectoryEntry);
-		parsedInfo->directoryStartLocation = info->parent->location;
-		parsedInfo->dirEntryPosition = info->lastElementIndex;
-		return parsedInfo;
+		PathInfo->directory = loadDir(info->parent->entries[info->lastElementIndex]);
+		PathInfo->d_reclen = info->parent->size/sizeof(DirectoryEntry);
+		PathInfo->directoryStartLocation = info->parent->location;
+		PathInfo->dirEntryPosition = info->lastElementIndex;
+		return PathInfo;
 	} else {
 		printf("Error opening Directory! in mfs.c\n");
 		return (-1);
@@ -126,7 +126,7 @@ int fs_setcwd(char *buf){
 	// Parse Path
 	char pathToParse[NAME_LIMIT];
 	strcpy(pathToParse, buf);
-	parsedInfo* info = malloc(sizeof(parsedInfo));
+	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
 	printf("-SETCWD- lastElementIndex: %d\n", info->lastElementIndex);
 	// Checking to see if the last element exists and is an element. 
@@ -153,7 +153,7 @@ int fs_isFile(char * path){
 	//call parsepath, return the isFile field
 	char pathToParse[NAME_LIMIT];
 	strcpy(pathToParse, path);
-	parsedInfo* info = malloc(sizeof(parsedInfo));
+	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
 
 	return info->isFile;
@@ -202,13 +202,13 @@ int fs_stat(const char *path, struct fs_stat *buf){
 	printf("\n---Stat---\n");
 	char pathToParse[NAME_LIMIT];
 	strcpy(pathToParse, path);
-	parsedInfo* info = malloc(sizeof(parsedInfo));
+	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
 	
 	DirectoryEntry* toInsert = info->parent->entries[info->lastElementIndex];
 	buf->st_size = toInsert->size;
 	buf->st_blksize = VCBPtr->blockSize;
-	buf->st_blocks = DIR_ENTRY_BLOCKS; // does this have to be calculated??
+	buf->st_blocks = D_ENTRY_BLOCKS; // does this have to be calculated??
 	buf->st_accesstime = toInsert->time;
 	buf->st_modtime = toInsert->time;
 	buf->st_createtime = toInsert->time;
@@ -235,7 +235,7 @@ DirectoryEntry * createDir(char* name, int isFile, DirectoryEntry* parent){
 	
 	// allocating memory for the new directory to be added
 	DirectoryEntry* currentDir = malloc(sizeof(DirectoryEntry));
-	int freeSpaceBlock = freeSpaceRequest(DIR_ENTRY_BLOCKS);
+	int freeSpaceBlock = freeSpaceRequest(D_ENTRY_BLOCKS);
 	time_t rawTime;
 	strcpy(currentDir->name, name);
 	currentDir->size = ENTRY_MEMORY;
@@ -278,14 +278,14 @@ DirectoryEntry * createDir(char* name, int isFile, DirectoryEntry* parent){
 
 // LBAxxx( buffer, lbaCount, lbaPosition) lbaCount -> block #, lbaPosition -> block location
 int writeDir(DirectoryEntry* entry){ // LBAwrite, returns location 
-	return LBAwrite(entry, DIR_ENTRY_BLOCKS, entry->location); // TODO: error check
+	return LBAwrite(entry, D_ENTRY_BLOCKS, entry->location); // TODO: error check
 
 }
 
 //LBAread reads location data into the given buffer
 DirectoryEntry* loadDir(DirectoryEntry* parent){ // LBAread
 	DirectoryEntry* buffer = malloc(sizeof(DirectoryEntry));
-	LBAread(buffer, DIR_ENTRY_BLOCKS, parent->location);	// TODO: error check
+	LBAread(buffer, D_ENTRY_BLOCKS, parent->location);	// TODO: error check
 	return buffer;
 }
 

@@ -20,6 +20,12 @@
 #include <time.h>
 #include "fsLow.h"
 
+#define SIGNATURE 0xBEEFED
+#define NUM_ENTRIES 51
+#define DIR_ENTRY_SIZE 40
+#define ENTRY_MEM NUM_ENTRIES * DIR_ENTRY_SIZE
+#define D_ENTRY_BLOCKS 4 
+
 typedef struct Extents { 
   unsigned long size; 
   unsigned int count; 

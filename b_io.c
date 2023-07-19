@@ -85,7 +85,7 @@ b_io_fd b_open (char * filename, int flags)
 	
 	char pathToParse[NAME_LIMIT];
 	strcpy(pathToParse, filename);
-	parsedInfo* info = malloc(sizeof(parsedInfo));
+	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
 
 	if (info->lastElementIndex <= 0 | flags <= 0){
