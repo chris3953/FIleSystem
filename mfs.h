@@ -89,5 +89,13 @@ struct fs_stat
 
 int fs_stat(const char *path, struct fs_stat *buf);
 
+DirectoryEntry* root; 
+DirectoryEntry* cwd; // Global variable used as the current working directory
+DirectoryEntry * createDir(char* name, int isFile, DirectoryEntry* parent); 
+int deleteEntry(DirectoryEntry* parent, int elementIndex);
+int writeDir(DirectoryEntry* entry);
+DirectoryEntry* loadDir(DirectoryEntry* parent);
+VCB *VCBPtr;
+
 #endif
 

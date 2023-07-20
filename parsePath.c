@@ -5,17 +5,17 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <math.h>
-
+#include "fsInit.h"
 #include "parsePath.h"
 
-void parsePath(DirectoryEntry * cwd, DirectoryEntry* root, char* pathToParse, parsedInfo * info ){
+void parsePath(DirectoryEntry * cwd, DirectoryEntry* root, char* pathToParse, PathInfo * info ){
     char * prev = NULL; 
     char * curr = NULL; 
     DirectoryEntry * currentDir;					
     
     char * token = strtok(pathToParse, "/");	
-    info->isFile = -1;							
-    info->lastElementIndex = -1; 			
+    info->isFileType = -1;							
+    info->indexLastElement = -1; 			
     
     if(pathToParse[0] == '/') 	
 	    currentDir = root;
@@ -37,19 +37,19 @@ void parsePath(DirectoryEntry * cwd, DirectoryEntry* root, char* pathToParse, pa
 				}
 
 				if(currentDir->entries[index] == NULL){
-					info->isPathValid = 0;
+					info->isValidPath = 0;
 					return;
 				}
 			}
 		} else if(token == NULL){
-			info->parent = (currentDir == NULL) ? root : currentDir;		
-			strcpy(info->newEntryName, curr);	
-			info->isPathValid = 1; 
+			info->parentDirEntry = (currentDir == NULL) ? root : currentDir;		
+			strcpy(info->lastElementName, curr);	
+			info->isValidPath = 1; 
 			int itr = 1;
 			while(currentDir->entries[++itr] != NULL){ 
 				if(!(strcmp(currentDir->entries[itr]->name, curr))){
-					info->lastElementIndex = itr;
-					info->isFile = currentDir->entries[itr]->isFile;
+					info->indexLastElement = itr;
+					info->isFileType = currentDir->entries[itr]->type;
 					return;
 				}
 			} 

@@ -8,9 +8,9 @@ int fs_mkdir(const char *pathname, mode_t mode){
 	strcpy(pathToParse, pathname);
 	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
-	if(info->isPathValid == 0)
+	if(info-> isValidPath == 0)
 		reutrn (-2);
-	if(info->lastElementIndex >= 0)
+	if(info-> indexLastElement >= 0)
 		return (-2);
 	printf("MKDIR parent: %s\n", info->parent->name);
 	DirectoryEntry* newDir = createDir(info->newEntryName, 0, info->parent);
@@ -33,7 +33,7 @@ int fs_rmdir(const char *pathname){
 	strcpy(pathToParse, pathname);
 	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
-	printf("IN RMDIR . . .\n lastElementindex: %d, isFile: %d\n", info->lastElementIndex, info->parent->entries[info->lastElementIndex]->isFile);	
+	printf("IN RMDIR . . .\n lastElementindex: %d, isFile: %d\n", info->indexLastElement, info->parent->entries[info->indexLastElement]->isFile);	
 	if(info->lastElementIndex < 0)
 		return (-2);	// if last element doesn't exist, error
 	if(info->parent->entries[info->lastElementIndex]->isFile)

@@ -48,6 +48,8 @@ typedef struct DirectoryEntry {
    time_t creation_date; // date the entry was created
    time_t last_modified; // date the entry was last modified
    time_t last_opened; // date the entry was last opened
+   struct DirectoryEntry ** entries;
+
 
 }DirectoryEntry; 
 
