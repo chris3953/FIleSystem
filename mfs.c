@@ -9,11 +9,11 @@ int fs_mkdir(const char *pathname, mode_t mode){
 	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
 	if(info-> isValidPath == 0)
-		reutrn (-2);
+		return (-2);
 	if(info-> indexLastElement >= 0)
 		return (-2);
-	printf("MKDIR parent: %s\n", info->parent->name);
-	DirectoryEntry* newDir = createDir(info->newEntryName, 0, info->parent);
+	printf("MKDIR parent: %s\n", info->parentDirEntry->name);
+	DirectoryEntry* newDir = createDir(info->lastElementName, 0, info->parentDirEntry);
 	printf("Created dir: %s\n", newDir->name);
 	//TODO: free info
 	writeDir(newDir);
@@ -33,18 +33,18 @@ int fs_rmdir(const char *pathname){
 	strcpy(pathToParse, pathname);
 	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
-	printf("IN RMDIR . . .\n lastElementindex: %d, isFile: %d\n", info->indexLastElement, info->parent->entries[info->indexLastElement]->isFile);	
-	if(info->lastElementIndex < 0)
-		return (-2);	// if last element doesn't exist, error
-	if(info->parent->entries[info->lastElementIndex]->isFile)
-		return (-2);	// if last element is not a directory (0 = dir, 1 = file), error
+	printf("IN RMDIR . . .\n lastElementindex: %d, isFile: %d\n", info->indexLastElement, info->parentDirEntry->entries[info->indexLastElement]->type);	
+	if(info->indexLastElement< 0)
+		return  (-2) ;	// if last element doesn't exist, error
+	if(info->parentDirEntry->entries[info->indexLastElement]->type)
+		return  (-2) ;	// if last element is not a directory (0 = dir, 1 = file), error
 
-	DirectoryEntry* dirToDelete = loadDir(info->parent->entries[info->lastElementIndex]);
+	DirectoryEntry* dirToDelete = loadDir(info->parentDirEntry->entries[info->indexLastElement]);
 	// check if dirToDelete->entries is empty (only . and ..)
 	int itr = 1;
-	while() // if dir is not empty, return error
+	while(dirToDelete->entries[++itr] != NULL) // if dir is not empty, return error
 		return (-2);
-	return deleteEntry(info->parent, info->lastElementIndex); // 0 = success
+	return deleteEntry(info->parentDirEntry, info->indexLastElement); // 0 = success
 
 
 }
@@ -57,11 +57,11 @@ int fs_delete(char* filename){
         PathInfo* info = malloc(sizeof(PathInfo));
         parsePath(cwd, root, pathToParse, info);
 
-        if(info->lastElementIndex < 0)
+        if(info->indexLastElement < 0)
                 return (-2);    // if last element doesn't exist, error
-        if(!info->parent->entries[info->lastElementIndex]->isFile)
+        if(!info->parentDirEntry->entries[info->indexLastElement]->type)
                 return (-2);    // if last element is not a directory (0 = dir, 1 = file), error
-	return deleteEntry(info->parent, info->lastElementIndex);	// 0 = success
+	return deleteEntry(info->parentDirEntry, info->indexLastElement);	// 0 = success
 
 }//removes a file
 
@@ -75,25 +75,26 @@ fdDir * fs_opendir(const char *name){
 	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
 	
-	printf("-OPENDIR- parent name: %s LASTELEMENTINDEX: %d\n", info->parent->name, info->lastElementIndex);	
+	printf("-OPENDIR- parent name: %s LASTELEMENTINDEX: %d\n", info->parentDirEntry->name, info->indexLastElement);	
 	// TODO: Add if is directory condition
-	if(info->lastElementIndex != 0){
+	if(info->indexLastElement!= 0){
 		fdDir* PathInfo = malloc(sizeof(fdDir));
 
-		PathInfo->directory = loadDir(info->parent->entries[info->lastElementIndex]);
-		PathInfo->d_reclen = info->parent->size/sizeof(DirectoryEntry);
-		PathInfo->directoryStartLocation = info->parent->location;
-		PathInfo->dirEntryPosition = info->lastElementIndex;
+		PathInfo->directory = loadDir(info->parentDirEntry->entries[info->indexLastElement]);
+		PathInfo->d_reclen = info->parentDirEntry->size/sizeof(DirectoryEntry);
+		PathInfo->directoryStartLocation = info->parentDirEntry->location;
+		PathInfo->dirEntryPosition = info->indexLastElement;
 		return PathInfo;
 	} else {
 		printf("Error opening Directory! in mfs.c\n");
-		return (-1);
+		return (-1) ;
 	}	
 }
 
 // Closes the directory
 int fs_closedir(fdDir *dirp){
-	printf("\n---Close Directory---\n");	int itr = -1;
+	printf("\n---Close Directory---\n");	
+	int itr = -1;
 	while(dirp->directory->entries[++itr] != NULL){
 		dirp->directory->entries[itr] = NULL;
 		free(dirp->directory->entries[itr]);
@@ -128,17 +129,17 @@ int fs_setcwd(char *buf){
 	strcpy(pathToParse, buf);
 	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
-	printf("-SETCWD- lastElementIndex: %d\n", info->lastElementIndex);
+	printf("-SETCWD- lastElementIndex: %d\n", info->indexLastElement);
 	// Checking to see if the last element exists and is an element. 
-	if(info->lastElementIndex > 0){
+	if(info->indexLastElement > 0){
 		// Gets the location of the parent
-		DirectoryEntry * cwdPtr = loadDir(info->parent->entries[info->lastElementIndex]);
+		DirectoryEntry * cwdPtr = loadDir(info->parentDirEntry->entries[info->indexLastElement]);
 		// Allocates the cwd to the length of the buffer.
 		//char * localCwd = malloc(strlen(buf));
 		// Copies the cwd with the buffer.
 		//strcpy(localCwd, buf);
 		cwd = cwdPtr;
-		printf(cwd);
+		
 		return 0;
 	} else {
 		// Error message
@@ -156,7 +157,7 @@ int fs_isFile(char * path){
 	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
 
-	return info->isFile;
+	return info->isFileType;
 
 }     //return 1 if file, 0 otherwise
 
@@ -189,7 +190,7 @@ struct fs_diriteminfo *fs_readdir(fdDir *dirp){
 
 	// possible the left-hand side needs "newInfo->___" instead of "newInfo.___"
 	newInfo->d_reclen = dirp->d_reclen;
-	newInfo->fileType = dirBuf->entries[dirp->dirEntryPosition]->isFile;
+	newInfo->fileType = dirBuf->entries[dirp->dirEntryPosition]->type;
 	//newInfo->d_name = dirBuf->entries[dirp->dirEntryPosition]->name;
 	strcpy(newInfo->d_name, dirBuf->entries[dirp->dirEntryPosition]->name);
 
@@ -205,13 +206,13 @@ int fs_stat(const char *path, struct fs_stat *buf){
 	PathInfo* info = malloc(sizeof(PathInfo));
 	parsePath(cwd, root, pathToParse, info);
 	
-	DirectoryEntry* toInsert = info->parent->entries[info->lastElementIndex];
+	DirectoryEntry* toInsert = info->parentDirEntry->entries[info->indexLastElement];
 	buf->st_size = toInsert->size;
-	buf->st_blksize = VCBPtr->blockSize;
+	buf->st_blksize = VCBPtr->block_size;
 	buf->st_blocks = D_ENTRY_BLOCKS; // does this have to be calculated??
-	buf->st_accesstime = toInsert->time;
-	buf->st_modtime = toInsert->time;
-	buf->st_createtime = toInsert->time;
+	buf->st_accesstime = toInsert->creation_date;
+	buf->st_modtime = toInsert->last_modified;
+	buf->st_createtime = toInsert->creation_date;
 
 	return 0; 
 
@@ -235,13 +236,13 @@ DirectoryEntry * createDir(char* name, int isFile, DirectoryEntry* parent){
 	
 	// allocating memory for the new directory to be added
 	DirectoryEntry* currentDir = malloc(sizeof(DirectoryEntry));
-	int freeSpaceBlock = freeSpaceRequest(D_ENTRY_BLOCKS);
+	int freeSpaceBlock = GetFreeSpace(D_ENTRY_BLOCKS);
 	time_t rawTime;
 	strcpy(currentDir->name, name);
-	currentDir->size = ENTRY_MEMORY;
+	currentDir->size = ENTRY_MEM;
 	currentDir->location = freeSpaceBlock;
-	currentDir->time = time( &rawTime );
-	currentDir->isFile = isFile;
+	currentDir->creation_date = time( &rawTime );
+	currentDir->type = isFile;
 	
 	// allocating memory for the entries of new directory to be added
 	currentDir->entries = malloc(sizeof(DirectoryEntry*) * NUM_ENTRIES);
@@ -255,15 +256,15 @@ DirectoryEntry * createDir(char* name, int isFile, DirectoryEntry* parent){
 	strcpy(currentDir->entries[0]->name, ".");
 	currentDir->entries[0]->size = currentDir->size;
 	currentDir->entries[0]->location = freeSpaceBlock;
-	currentDir->entries[0]->time = currentDir->time;
-	currentDir->entries[0]->isFile = currentDir->isFile;
+	currentDir->entries[0]->creation_date = currentDir->creation_date;
+	currentDir->entries[0]->type = currentDir->type;
 	
 	currentDir->entries[1] = malloc(sizeof(DirectoryEntry));
 	strcpy(currentDir->entries[1]->name, "..");
 	currentDir->entries[1]->size = parent->size;
 	currentDir->entries[1]->location = parent->location;
-	currentDir->entries[1]->time = parent->time;
-	currentDir->entries[1]->isFile = parent->isFile;
+	currentDir->entries[1]->creation_date = parent->creation_date;
+	currentDir->entries[1]->type= parent->type;
 	currentDir->entries[1]->entries = parent->entries;
 
 	// setting . to go back to self

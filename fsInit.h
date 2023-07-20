@@ -41,7 +41,7 @@ typedef struct Extents {
 
 typedef struct DirectoryEntry { 
    unsigned long size; 
-   Extents location[10]; 
+   int location; 
    char name[128]; 
    int type; // 1 if entry is a directory, 0 if a file, -1 if entry is free
     

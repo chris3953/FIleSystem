@@ -52,7 +52,7 @@ int initFileSystem (uint64_t numberOfBlocks, uint64_t blockSize)
 	} else {
 		// initialize VCB
 		//vcb->root=;
-		vcb->totalBlocks = 0; // this is the KL in the hex 
+		vcb->totalBlocks = numberOfBlocks; // this is the KL in the hex 
 		vcb->block_size = blockSize;
 		vcb->free_space_start_block = 0;
 		vcb->signature = SIGNATURE;
@@ -80,11 +80,11 @@ int initRootDirectory(VCB* vcb){
 
     strcpy(de->name, ".");
     de->size = ENTRY_MEM;
-    de->location[0].size = startBlock;
+    de->location = startBlock;
     de->creation_date = t;
     de->last_modified = t;
 	de->last_opened = t;
-    de->type = 1; 
+    de->type = 0; 
 
     if(LBAwrite(de, D_ENTRY_BLOCKS, startBlock) == -1){
 		printf("Write error.\n");
@@ -96,11 +96,11 @@ int initRootDirectory(VCB* vcb){
 
 	strcpy(de2->name, ".."); 
 	de->size = ENTRY_MEM;
-    de->location[1].size = startBlock;
+    de->location = startBlock;
     de->creation_date = t;
     de->last_modified = t;
 	de->last_opened = t;
-    de->type = 1;
+    de->type = 0;
 
 	if(LBAwrite(de2, D_ENTRY_BLOCKS,  startBlock+1) == -1){
 		printf("Write error.\n");
@@ -117,6 +117,7 @@ int initRootDirectory(VCB* vcb){
 void exitFileSystem ()
 	{
 	printf ("System exiting\n");
+
 	}
 
 

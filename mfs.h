@@ -36,12 +36,12 @@ typedef u_int32_t uint32_t;
 
 // This structure is returned by fs_readdir to provide the caller with information
 // about each file as it iterates through a directory
-struct fs_diriteminfo
+typedef struct fs_diriteminfo
 	{
     unsigned short d_reclen;    /* length of this record */
     unsigned char fileType;    
     char d_name[256]; 			/* filename max filename is 255 characters */
-	};
+	} fs_diriteminfo;
 
 // This is a private structure used only by fs_opendir, fs_readdir, and fs_closedir
 // Think of this like a file descriptor but for a directory - one can only read
@@ -51,10 +51,10 @@ struct fs_diriteminfo
 typedef struct
 	{
 	/*****TO DO:  Fill in this structure with what your open/read directory needs  *****/
-	unsigned short  d_reclen;		/* length of this record */
-	unsigned short	dirEntryPosition;	/* which directory entry position, like file pos */
-	struct DirectoryEntry *	directory;			/* Pointer to the loaded directory you want to iterate */
-	struct fs_diriteminfo * di;		/* Pointer to the structure you return from read */
+	struct DirectoryEntry* directory;
+	unsigned short  d_reclen;		/*length of this record */
+	unsigned short	dirEntryPosition;	/*which directory entry position, like file pos */
+	uint64_t	directoryStartLocation;		/*Starting LBA of directory */
 	} fdDir;
 
 // Key directory functions
