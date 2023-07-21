@@ -28,12 +28,8 @@
 #include "FreeSpace.h"
 #include "parsePath.h"
 
-
-
-
-
- VCB* vcb = NULL;
- int initRootDirectory(VCB* vcb); 
+VCB* vcb = NULL;
+int initRootDirectory(VCB* vcb); 
 
 int initFileSystem (uint64_t numberOfBlocks, uint64_t blockSize)
 	{
@@ -48,10 +44,9 @@ int initFileSystem (uint64_t numberOfBlocks, uint64_t blockSize)
 		free(vcb);
 		vcb = NULL;
 		printf("Signature matched, Already initialized\n");
-		return -1; //ERROR		
+		return 0; //No need to initialize VCB		
 	} else {
 		// initialize VCB
-		//vcb->root=;
 		vcb->totalBlocks = numberOfBlocks; // this is the KL in the hex 
 		vcb->block_size = blockSize;
 		vcb->free_space_start_block = 0;

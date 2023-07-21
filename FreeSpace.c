@@ -39,8 +39,6 @@ int InitFreeSpace() {
 
   LBAwrite(FreeSpace,5,1); 
   return RequestedSpace; 
-
-
 }
 
 
@@ -86,7 +84,4 @@ int ReleaseSpace(int Location , int NumberOfBlocks) {
 		FreeSpace[byteNum] = FreeSpace[byteNum] & (~(1 << (8 - ((bitNum % 8) + 1))));
 		bitNum++;
 	}
-
-
-
 }

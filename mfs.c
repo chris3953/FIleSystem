@@ -87,7 +87,8 @@ fdDir * fs_opendir(const char *name){
 		return PathInfo;
 	} else {
 		printf("Error opening Directory! in mfs.c\n");
-		return (-1) ;
+		free(info);
+		return (-1);
 	}	
 }
 
