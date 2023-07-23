@@ -140,8 +140,7 @@ int fs_setcwd(char *buf){
 		// Copies the cwd with the buffer.
 		//strcpy(localCwd, buf);
 		cwd = cwdPtr;
-		printf("we made it here"); 
-		printf(cwd); 
+		
 		return 0;
 	} else {
 		// Error message
