@@ -1,9 +1,9 @@
 /**************************************************************
-* Class:  CSC-415-0#  Fall 2021
-* Names: 
-* Student IDs:
-* GitHub Name:
-* Group Name:
+* Class: CSC-415-02 Summer 2023
+* Names: Andy Almeida, Masen Beacham, Christian Mcglothen, Kendrick Rivas
+* ID's:  922170012, 918724721, 918406078, 922898506
+* GitHub Name: chris3953
+* Group Name: Beerman
 * Project: Basic File System
 *
 * File: b_io.h
