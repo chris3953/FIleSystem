@@ -16,11 +16,12 @@
 #define _MFS_H
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include <time.h>
 
 #include "b_io.h"
 #include "fsInit.h"
-
+//#include "ParsePath.h"
 
 #include <dirent.h>
 #define FT_REGFILE	DT_REG
@@ -36,12 +37,12 @@ typedef u_int32_t uint32_t;
 
 // This structure is returned by fs_readdir to provide the caller with information
 // about each file as it iterates through a directory
-typedef struct fs_diriteminfo
+struct fs_diriteminfo
 	{
     unsigned short d_reclen;    /* length of this record */
     unsigned char fileType;    
     char d_name[256]; 			/* filename max filename is 255 characters */
-	} fs_diriteminfo;
+	};
 
 // This is a private structure used only by fs_opendir, fs_readdir, and fs_closedir
 // Think of this like a file descriptor but for a directory - one can only read
@@ -51,10 +52,10 @@ typedef struct fs_diriteminfo
 typedef struct
 	{
 	/*****TO DO:  Fill in this structure with what your open/read directory needs  *****/
-	struct DirectoryEntry* directory;
-	unsigned short  d_reclen;		/*length of this record */
-	unsigned short	dirEntryPosition;	/*which directory entry position, like file pos */
-	uint64_t	directoryStartLocation;		/*Starting LBA of directory */
+	unsigned short  d_reclen;		/* length of this record */
+	unsigned short	dirEntryPosition;	/* which directory entry position, like file pos */
+	DirectoryEntry * directory;			/* Pointer to the loaded directory you want to iterate */
+	struct fs_diriteminfo * di;		/* Pointer to the structure you return from read */
 	} fdDir;
 
 // Key directory functions
@@ -89,13 +90,44 @@ struct fs_stat
 
 int fs_stat(const char *path, struct fs_stat *buf);
 
-DirectoryEntry* root; 
-DirectoryEntry* cwd; // Global variable used as the current working directory
-DirectoryEntry * createDir(char* name, int isFile, DirectoryEntry* parent); 
-int deleteEntry(DirectoryEntry* parent, int elementIndex);
-int writeDir(DirectoryEntry* entry);
-DirectoryEntry* loadDir(DirectoryEntry* parent);
-VCB *VCBPtr;
+DirectoryEntry* root;
+DirectoryEntry* cwd;
+char* CurrentPath;
+
+// Function to find an entry within a directory
+// Takes a directory and a token as input, and returns the index.
+int FindEntryInDir(DirectoryEntry * parent, char * token);
+
+
+int SetEntryInDir(DirectoryEntry* parent,int NewDirectoryFirstBlock, time_t rawTime, char * entryName);
+
+bool CreateNewDir(int newLocation, int parentLocation, time_t rawTime);
+
+// Function should load a directory from a given directory entry.
+// Takes a pointer to a directory entry and returns a pointer to a loaded directory.
+DirectoryEntry * loadDir(DirectoryEntry parent);
+
+// Function should read a directory entry and check if it is free
+// A directory entry is free if there is no name, and type is set to -1
+bool isUsed(DirectoryEntry de);
+
+// Function to determine if a given directory entry is a directory
+// Takes a directory entry as input and returns a boolean value.
+bool isDir(DirectoryEntry entry);
+
+typedef struct PathInfo{
+    int isValidPath;            // 1 for valid / 0 for invalid
+    int isFileType;             // 1 for file / 0 for directory / -1 if invalid 
+    int index;                  // index position of directory entry in the directory (-1) if it doesnt exist
+    char* lastToken;            // the name of the last element
+    DirectoryEntry* parent;     // directoryEntry of the parent directory
+    // add more fields here
+} PathInfo;
+
+// Function to parse path
+// Takes in the current working directory, root directory, the path to be parsed, and a reference to the PathInfo structure
+// Parse Path returns 0 if successful, -1 if otherwise
+int parsePath(char* path, PathInfo * pathInfo);
 
 #endif
 

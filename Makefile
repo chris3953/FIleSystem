@@ -69,4 +69,12 @@ run: $(ROOTNAME)$(HW)$(FOPTION)
 vrun: $(ROOTNAME)$(HW)$(FOPTION)
 	valgrind ./$(ROOTNAME)$(HW)$(FOPTION) $(RUNOPTIONS)
 
+restart:
+	make clean
+	rm SampleVolume
+	make run
+	
+	
+
+
 

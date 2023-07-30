@@ -1,0 +1,39 @@
+Command to examine HexDump:Hexdump/hexdump.linux --start # --count # SampleVolume
+
+link to project report: https://docs.google.com/document/d/1HtSafsjU4MoeZiDFwA5IqPv82Ro41mqVd9aJ8lCRWLU/edit
+
+Blocks are two vertical sections of the hexdump
+
+Block [0] is Biermand
+Block [1] is the VCB
+Block [2-6] is the BitMap
+Block [7] is the Root Directory
+
+A Directory is an array of Directory Entries
+
+
+Checks
+    //Check "."
+    // printf("\".\".size=%ld\n", directory[0].size);
+    // printf("\".\".location[0]=%ld\n", directory[0].location[0].loc);
+    // printf("\".\".name=%s\n", directory[0].name);	
+    // printf("\".\".type=%d\n", directory[0].type);	
+    // printf("\".\".creation_date=%ld\n", directory[0].creation_date);
+
+    //Check ".."
+    // printf("\"..\".size=%ld\n", directory[1].size);
+    // printf("\"..\".location[0]=%ld\n", directory[1].location[0].loc);
+    // printf("\"..\".name=%s\n", directory[1].name);	
+    // printf("\"..\".type=%d\n", directory[1].type);	
+    // printf("\"..\".creation_date=%ld\n", directory[1].creation_date);
+
+    // makedir check
+    // printf("isValidPath: %d\n", pathinfo->isValidPath);
+    // printf("isFileType: %d\n", pathinfo->isFileType);
+    // printf("index: %d\n", pathinfo->index); 
+    // printf("lastToken: %s\n", pathinfo->lastToken);
+    // printf("parent->size: %lu\n", pathinfo->parent->size);
+    // printf("parent->name: %s\n", pathinfo->parent->name);
+    // printf("parent->type: %d\n", pathinfo->parent->type);
+    // printf("parent->loc: %ld\n", pathinfo->parent->location[0].loc);
+    // printf("parent->count: %d\n", pathinfo->parent->location[0].count);
